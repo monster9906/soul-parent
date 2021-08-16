@@ -1,5 +1,6 @@
 package com.soul.springbootrocketmq.producer;
 
+import com.soul.springbootrocketmq.consumer.ConsumerTestHook;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.slf4j.Logger;
@@ -46,6 +47,11 @@ public class MQProducerConfiguration {
         producer.setSendMsgTimeout(this.sendMsgTimeout);
         //如果发送消息失败，设置重试次数，默认为 2 次
         producer.setRetryTimesWhenSendFailed(this.retryTimesWhenSendFailed);
+
+        // 注册 SendMessageHook
+        producer.getDefaultMQProducerImpl().registerSendMessageHook(new ProducerTestHook());
+
+
         try {
             producer.start();
             LOGGER.info("producer is started. groupName:{}, namesrvAddr: {}", groupName, namesrvAddr);
